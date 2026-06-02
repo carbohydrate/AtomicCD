@@ -1,0 +1,16 @@
+## Interface: 120005
+## Title: AtomicCD
+## Notes: TODO
+## Author: vitamin
+## Version: @project-version@
+## IconTexture: 135744
+## X-Curse-Project-ID: 1421110
+## X-Wago-ID: bGoMon60
+
+libs\LibStub\LibStub.lua
+libs\LibSpecialization\LibSpecialization.lua
+
+AtomicCD.lua
+AtomicCDMapper.lua
+GetTalentData.lua
+AtomicCDTalents.lua
