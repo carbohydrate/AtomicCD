@@ -121,6 +121,22 @@ local spellModifiersTable = {
     },
     -- Restoration
     [264] = {
+        -- Spirit Link Totem
+        [98008] = {},
+        -- Healing Tide Totem
+        [108280] = {
+            talents = {
+                [101913] = 60000, -- First Ascendant
+            },
+        },
+        -- Ascendance
+        [114052] = {
+            talents = {
+                [101913] = 60000, -- First Ascendant
+            },
+        },
+        -- Wind Shear
+        [57994] = {},
     },
 
     -- Affliction

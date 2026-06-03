@@ -55,6 +55,12 @@ local function getTalentData(specId)
                         if definitionInfo.spellID then
                             -- local spellName = ExecEnv.GetSpellName(definitionInfo.spellID)
                             local spellName = C_Spell.GetSpellName(definitionInfo.spellID)
+
+                            -- find talent ids
+                            -- if spellName == "First Ascendant" then
+                            --     print(spellName, talentId)
+                            -- end
+
                             if spellName then
                                 local talentData = {
                                     talentId,
