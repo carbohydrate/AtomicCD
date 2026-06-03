@@ -1,8 +1,6 @@
 local _, AtomicCD = ...
 
 local specTalentData = {}
-
--- playerName -> talentId
 local talentStore = {}
 
 local function readLoadoutHeader(importStream)
@@ -27,7 +25,6 @@ end
 
 local function getTalentData(specId)
     if specTalentData[specId] then
-        print('returning cached talent data for specId:', specId)
         -- return unpack(specTalentData[specId])
         return specTalentData[specId]
     end
@@ -103,7 +100,6 @@ local function getTalentData(specId)
 end
 
 local function setPlayerTalents(talentString, playerName)
-    print("setting player talents!")
     local importStream = ExportUtil.MakeImportDataStream(talentString);
     local _, serializationVersion, specId = readLoadoutHeader(importStream);
     local treeID = C_ClassTalents.GetTraitTreeForSpec(specId)

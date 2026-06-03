@@ -36,6 +36,8 @@ local spellModifiersTable = {
                 [103210] = 5400, -- Survival of the Fittest (5400ms per rank, reduduction applied AFTER base reduduction)
             },
         },
+        -- Incarnation: Guardian of Ursoc
+        [102558] = {},
     },
     -- Restoration
     [105] = {
@@ -165,4 +167,5 @@ local function getSpellModifiers(playerName, specId, spellId)
     return spellModifiers
 end
 
+AtomicCD.spellModifiersTable = spellModifiersTable
 AtomicCD.getSpellModifiers = getSpellModifiers

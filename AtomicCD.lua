@@ -29,43 +29,64 @@ function AC:OnEvent(event, ...)
     self[event](self, ...)
 end
 
-function AC:ADDON_LOADED(addOnName)
-    if addOnName == name then
-        self:UnregisterEvent("ADDON_LOADED")
+local buttonSize = 34
+local hPad = 4
+
+local function getXOffset(i)
+    if (i == 0) then
+        return -hPad
+    else
+        local offset = (buttonSize * i) + (hPad * i) + hPad
+        return -offset
+    end
+end
+
+local function setupFrames()
+    for i = 1, 5 do
+        local unit = (i == 1 and "player") or ("party" .. i)
+        local frame = _G["CompactPartyFrameMember" .. i]
+
+        local playerName = GetUnitName(unit, true)
+        local libSpecData = UnitSpecStore[playerName]
+        if frame and playerName and libSpecData then
+            local specId = UnitSpecStore[playerName].specId
+
+            local spells = {}
+            local count = 0
+            for spellId, _ in pairs(AtomicCD.spellModifiersTable[specId]) do
+                local spellFrame = CreateFrame("Frame", nil, UIParent)
+                spellFrame:SetPoint("RIGHT", frame, "LEFT", getXOffset(count), 0)
+                spellFrame:SetSize(buttonSize, buttonSize)
+
+                local texture = spellFrame:CreateTexture(nil, "BACKGROUND")
+                texture:SetAllPoints(spellFrame)
+                texture:SetTexture(C_Spell.GetSpellTexture(spellId))
+                texture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+                spellFrame.texture = texture
+
+                local cooldown = CreateFrame("Cooldown", nil, spellFrame, "CooldownFrameTemplate")
+                cooldown:SetAllPoints(spellFrame)
+
+                spellFrame.cooldown = cooldown
+
+                spells[spellId] = spellFrame
+
+                count = count + 1
+            end
+
+            UnitContainerStore[unit] = spells
+            
+        else
+            -- print("CompactPartyFrame or playerName or no libSpecData at index: ", i, " does not exist")
+        end
     end
 end
 
 function AC:PLAYER_ENTERING_WORLD(a, b, c)
-
-    if (CompactPartyFrameMember1 ~= nil) then
-        local container = CreateFrame("Frame", nil, UIParent)
-
-        container:SetPoint("RIGHT", CompactPartyFrameMember1, "LEFT", -5, 0)
-        container:SetSize(34, 34)
-
-        local spellFrame = CreateFrame("Frame", nil, container)
-        spellFrame:SetAllPoints(container)
-
-        local texture = spellFrame:CreateTexture(nil, "BACKGROUND")
-        texture:SetAllPoints(spellFrame)
-        texture:SetTexture(C_Spell.GetSpellTexture(22812))
-        texture:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-        spellFrame.texture = texture
-
-        local cooldown = CreateFrame("Cooldown", nil, spellFrame, "CooldownFrameTemplate")
-        cooldown:SetAllPoints(spellFrame)
-
-        spellFrame.cooldown = cooldown
-
-        container[22812] = spellFrame
-
-        UnitContainerStore["player"] = container
-    else
-        print("CompactPartyFrameMember1 does not exist")
-    end
+    setupFrames()
 end
 
-local function StartManualCooldown(frame, durationMs)
+local function startManualCooldown(frame, durationMs)
     local startTime = GetTime()
     local duration = durationMs / 1000
     frame.cooldownEnd = startTime + duration
@@ -111,14 +132,15 @@ function AC:UNIT_SPELLCAST_SUCCEEDED(unit, castGuid, spellId)
     local spellModifiers = AtomicCD.getSpellModifiers(playerName, unitSpec.specId, spellId, unitSpec.talents)
 
     if (spellModifiers > 0) then
-        StartManualCooldown(frame, baseCooldownMs - spellModifiers)
+        startManualCooldown(frame, baseCooldownMs - spellModifiers)
     else
-        StartManualCooldown(frame, baseCooldownMs)
+        startManualCooldown(frame, baseCooldownMs)
     end
 end
 
 function AC:GROUP_ROSTER_UPDATE()
     print("GROUP_ROSTER_UPDATE")
+    setupFrames()
 end
 
 function AC:PLAYER_SPECIALIZATION_CHANGED()
@@ -134,7 +156,7 @@ SlashCmdList.AtomicCD = function(msg)
     end
 end
 
-AC:RegisterEvent("ADDON_LOADED")
+-- AC:RegisterEvent("ADDON_LOADED")
 AC:RegisterEvent("PLAYER_ENTERING_WORLD")
 AC:RegisterEvent("GROUP_ROSTER_UPDATE")
 AC:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")

@@ -12,5 +12,4 @@ libs\LibSpecialization\LibSpecialization.lua
 
 AtomicCD.lua
 AtomicCDMapper.lua
-GetTalentData.lua
 AtomicCDTalents.lua
