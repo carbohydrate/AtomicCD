@@ -3,19 +3,28 @@ local _, AtomicCD = ...
 local spellModifiersTable = {
     -- Blood
     [250] = {
+        -- Dancing Rune Weapon
+        [49028] = {},
     },
     -- Frost
     [251] = {
+        -- Breath of Sindragosa
+        [1249658] = {},
     },
     -- Unholy
     [252] = {
+        -- Army of the Dead
+        [42650] = {},
     },
 
     -- Havoc
     [577] = {
+        [191427] = {},
     },
     -- Vengeance
     [581] = {
+        -- Metamorphosis
+        [187827] = {},
     },
     -- Devourer
     [1480] = {
@@ -23,9 +32,16 @@ local spellModifiersTable = {
 
     -- Balance
     [102] = {
+        -- Incarnation: Chosen of Elune
+        [102560] = {},
     },
     -- Feral
     [103] = {
+        [106951] = {
+            talents = {
+                [103161] = 60000
+            }
+        }
     },
     -- Guardian
     [104] = {
@@ -41,6 +57,10 @@ local spellModifiersTable = {
     },
     -- Restoration
     [105] = {
+        -- Tranquility
+        [740] = {},
+        -- Incarnation: Tree of Life
+        [33891] = {},
     },
 
     -- Devastation
