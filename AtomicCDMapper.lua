@@ -19,15 +19,24 @@ local spellModifiersTable = {
 
     -- Havoc
     [577] = {
+        -- Disrupt
+        [183752] = {},
+        -- Metamorphosis
         [191427] = {},
     },
     -- Vengeance
     [581] = {
+        -- Disrupt
+        [183752] = {},
         -- Metamorphosis
         [187827] = {},
     },
     -- Devourer
     [1480] = {
+        -- Disrupt
+        [183752] = {},
+        -- Soul Immolation
+        [1241937] = {},
     },
 
     -- Balance
@@ -61,26 +70,54 @@ local spellModifiersTable = {
         [740] = {},
         -- Incarnation: Tree of Life
         [33891] = {},
+        [102342] = {},
     },
 
     -- Devastation
     [1467] = {
+        -- Dragonrage
+        [375087] = {},
     },
     -- Preservation
     [1468] = {
+        -- Stasis
+        [370537] = {},
+        -- TimeDilation
+        [357170] = {},
     },
     -- Augmentation
     [1473] = {
+        -- Breath of Eons
+        [403631] = {},
     },
 
     -- Beast Mastery
     [253] = {
+        -- Counter Shot
+        [147362] = {},
     },
     -- Marksmanship
     [254] = {
+        -- Counter Shot
+        [147362] = {},
+        -- Trueshot
+        [288613] = {
+            talents = {
+                -- Calling the Shots
+                [128379] = 30000,
+            }
+        },
     },
     -- Survival
     [255] = {
+        -- Takedown
+        [1250646] = {
+            talents = {
+                [135511] = 15000,
+            }
+        },
+        -- Muzzle
+        [187707] = {},
     },
 
     -- Arcane
