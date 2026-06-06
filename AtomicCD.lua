@@ -160,16 +160,15 @@ function AC:UNIT_SPELLCAST_SUCCEEDED(unit, castGuid, spellId)
 
     local spellCharges = C_Spell.GetSpellCharges(spellId)
     if (spellCharges) then
-        print('spellCharges.cooldownDuration:', spellId, spellCharges.cooldownDuration)
+        local baseCooldownMs = spellCharges.cooldownDuration * 1000
+        local spellModifiers = AtomicCD.getSpellModifiers(playerName, unitSpec.specId, spellId, unitSpec.talents)
+
+        startManualCooldown(frame, baseCooldownMs - spellModifiers)
     else
         local baseCooldownMs = GetSpellBaseCooldown(spellId)
         local spellModifiers = AtomicCD.getSpellModifiers(playerName, unitSpec.specId, spellId, unitSpec.talents)
 
-        if (spellModifiers > 0) then
-            startManualCooldown(frame, baseCooldownMs - spellModifiers)
-        else
-            startManualCooldown(frame, baseCooldownMs)
-        end
+        startManualCooldown(frame, baseCooldownMs - spellModifiers)
     end
 end
 

@@ -163,10 +163,6 @@ local spellModifiersTable = {
 -- returns amount of miliseconds to remove from the base cooldown of the spell
 local function getSpellModifiers(playerName, specId, spellId)
     local specModifiers = spellModifiersTable[specId][spellId]
-    if not specModifiers then
-        return 0
-    end
-
     local playerTalents = AtomicCD.getPlayerTalents(playerName)
 
     local baseModifier = specModifiers.base or 0
