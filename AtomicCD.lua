@@ -43,25 +43,21 @@ local function getXOffset(i)
     end
 end
 
--- /run AtomicCD:GROUP_ROSTER_UPDATE()
-local function refreshFrame(frame, unit, playerName)
-    print("refreshFrame! playerName:", playerName)
-
+local function tearDownFrameByUnit(unit)
     local storeSpells = UnitSpellsStore[unit]
     if storeSpells ~= nil then
-        print("clearing already setup frame as part of refresh!")
-        for spellId, spellFrame in pairs(storeSpells) do
-            print('spellId:', spellId)
+        for _, spellFrame in pairs(storeSpells) do
             spellFrame:Hide()
-            spellFrame:SetScript("OnShow", nil)
-            spellFrame:SetScript("OnUpdate", nil)
-            spellFrame:SetScript("OnUpdate", nil)
             spellFrame:UnregisterAllEvents()
             spellFrame = nil
         end
 
         UnitSpellsStore[unit] = nil
     end
+end
+
+local function refreshFrame(frame, unit, playerName)
+    tearDownFrameByUnit(unit)
 
     local libSpecData = UnitSpecStore[playerName]
     if playerName and libSpecData then
@@ -85,9 +81,6 @@ local function refreshFrame(frame, unit, playerName)
 
             spellFrame.cooldown = cooldown
 
-            -- remove
-            spellFrame.name = spellId
-
             spells[spellId] = spellFrame
 
             count = count + 1
@@ -95,40 +88,30 @@ local function refreshFrame(frame, unit, playerName)
 
         UnitSpellsStore[unit] = spells
     else
-        print("playerName or libSpecData is nil for:", unit)
+        -- print("playerName or libSpecData is nil for:", unit)
     end
 end
 
 function AC:PLAYER_ENTERING_WORLD()
-    print('PLAYER_ENTERING_WORLD')
     for i = 1, 5 do
         local unit = (i == 1 and "player") or ("party" .. i - 1)
         local frame = _G["CompactPartyFrameMember" .. i]
 
         if frame then
             frame:HookScript("OnShow", function(self)
-                -- print(self:GetName(), "shown")
-
                 local playerName = GetUnitName(unit, true)
                 refreshFrame(self, unit, playerName)
             end)
 
             frame:HookScript("OnHide", function(self)
-                -- print(self:GetName(), "hidden")
-                local storeSpells = UnitSpellsStore[unit]
-                if storeSpells ~= nil then
-                    print("BLOWING STORAGE AWAY FOR UNIT!", unit)
-                    UnitSpellsStore[unit] = nil
-                end
-                -- local spells = UnitSpellsStore[unit]
-
-                -- if spells then
-                --     for spellId, spellFrame in pairs(spells) do
-                --         print('spellId:', spellId)
-                --         spellFrame:Hide()
-                --     end
-                -- end
+                tearDownFrameByUnit(unit)
             end)
+
+            -- /reload when already in a group
+            if frame:IsVisible() then
+                local playerName = GetUnitName(unit, true)
+                refreshFrame(frame, unit, playerName)
+            end
         end
     end
 end
@@ -140,12 +123,8 @@ local function startManualCooldown(frame, durationMs)
     frame.texture:SetDesaturated(true)
     frame.cooldown:SetCooldown(startTime, duration)
 
-    local name = frame:GetName()
-    print('durationMs + name:', durationMs, name)
-
     frame:SetScript("OnUpdate", function(self, elapsed)
         if GetTime() >= self.cooldownEnd then
-            print('cooldownEnd!')
             self.texture:SetDesaturated(false)
             self.cooldown:SetCooldown(0, 0)
             self.cooldownEnd = nil
@@ -175,19 +154,16 @@ function AC:UNIT_SPELLCAST_SUCCEEDED(unit, castGuid, spellId)
     end
 
     local frame = spells[spellId]
-    print('frame:', frame)
     if not frame then
         return
     end
 
     local spellCharges = C_Spell.GetSpellCharges(spellId)
-    print('spellCharges:', spellCharges)
     if (spellCharges) then
         print('spellCharges.cooldownDuration:', spellId, spellCharges.cooldownDuration)
     else
         local baseCooldownMs = GetSpellBaseCooldown(spellId)
         local spellModifiers = AtomicCD.getSpellModifiers(playerName, unitSpec.specId, spellId, unitSpec.talents)
-        print('cooldown info!:', baseCooldownMs, spellModifiers)
 
         if (spellModifiers > 0) then
             startManualCooldown(frame, baseCooldownMs - spellModifiers)
@@ -198,14 +174,13 @@ function AC:UNIT_SPELLCAST_SUCCEEDED(unit, castGuid, spellId)
 end
 
 function AC:GROUP_ROSTER_UPDATE()
-    print("GROUP_ROSTER_UPDATE")
     for i = 1, 5 do
         local unit = (i == 1 and "player") or ("party" .. i - 1)
         local frame = _G["CompactPartyFrameMember" .. i]
 
         if frame then
             local playerName = GetUnitName(unit, true)
-            refreshFrame(self, unit, playerName)
+            refreshFrame(frame, unit, playerName)
         end
     end
 end
